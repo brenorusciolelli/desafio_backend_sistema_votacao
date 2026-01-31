@@ -1,4 +1,4 @@
-package com.desafio.teste.desafiobackend.model.service;
+package com.desafio.teste.desafiobackend.service;
 
 import com.desafio.teste.desafiobackend.model.entity.PautaEntity;
 import com.desafio.teste.desafiobackend.model.entity.SessaoVotacaoEntity;
