@@ -9,7 +9,7 @@ import lombok.Data;
 
 @Entity
 @Data
-public class Pauta {
+public class PautaEntity {
 
   @Id
   @GeneratedValue
