@@ -6,6 +6,6 @@ import com.desafio.teste.desafiobackend.model.enums.VoteValue;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface VotoRepository extends JpaRepository<VoteValueEntity, UUID> {
-  long countBySessionAndValue(SessaoVotacaoEntity session, VoteValue value);
+public interface VoteRepository extends JpaRepository<VoteValueEntity, UUID> {
+  long countBySessionAndVoteValue(SessaoVotacaoEntity session, VoteValue value);
 }
