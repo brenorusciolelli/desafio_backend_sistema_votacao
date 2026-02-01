@@ -28,8 +28,8 @@ public class PautaEntity {
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
 
-  private String titulo;
-  private String descricao;
+  private String title;
+  private String description;
 
   private LocalDateTime createdAt = LocalDateTime.now();
 
