@@ -6,7 +6,7 @@ import com.desafio.teste.desafiobackend.model.entity.VoteValueEntity;
 import com.desafio.teste.desafiobackend.model.enums.VoteValue;
 import com.desafio.teste.desafiobackend.model.repository.AssociadoRepository;
 import com.desafio.teste.desafiobackend.model.repository.SessaoRepository;
-import com.desafio.teste.desafiobackend.model.repository.VotoRepository;
+import com.desafio.teste.desafiobackend.model.repository.VoteRepository;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,13 +15,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class VoteService {
 
-  private final VotoRepository      votoRepository;
-  private final SessaoRepository    sessaoRepository;
+  private final VoteRepository   voteRepository;
+  private final SessaoRepository sessaoRepository;
   private final AssociadoRepository associadoRepository;
 
-  public void vote(UUID sessaoId, String cpf, VoteValue valor) {
+  public VoteValueEntity vote(UUID sessaoId, String cpf, VoteValue valor) {
 
-    SessaoVotacaoEntity sessao = sessaoRepository.findById(sessaoId)
+    SessaoVotacaoEntity sessao = sessaoRepository.findByPauta_Id(sessaoId)
         .orElseThrow();
 
     if (!sessao.isOpen()) {
@@ -35,9 +35,9 @@ public class VoteService {
     VoteValueEntity vote = new VoteValueEntity();
     vote.setSession(sessao);
     vote.setAssociate(associate);
-    vote.setValue(valor);
+    vote.setVoteValue(valor);
 
-    votoRepository.save(vote);
+    return voteRepository.save(vote);
   }
 }
 
