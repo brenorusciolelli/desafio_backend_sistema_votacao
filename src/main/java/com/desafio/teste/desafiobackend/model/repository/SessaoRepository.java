@@ -6,5 +6,5 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SessaoRepository extends JpaRepository<SessaoVotacaoEntity, UUID> {
-  Optional<SessaoVotacaoEntity> findByPautaId(UUID pautaId);
+  Optional<SessaoVotacaoEntity> findByPauta_Id(UUID pautaId);
 }
