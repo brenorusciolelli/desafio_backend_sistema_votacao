@@ -11,10 +11,18 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.util.UUID;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"associate_id", "session_id"}))
 public class VoteValueEntity {
 
@@ -29,6 +37,6 @@ public class VoteValueEntity {
   private SessaoVotacaoEntity session;
 
   @Enumerated(EnumType.STRING)
-  private VoteValue value;
+  private VoteValue voteValue;
 }
 
