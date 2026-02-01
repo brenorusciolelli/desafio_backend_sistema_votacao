@@ -21,23 +21,35 @@ public class VoteService {
 
   public VoteValueEntity vote(UUID sessaoId, String cpf, VoteValue valor) {
 
-    SessaoVotacaoEntity sessao = sessaoRepository.findByPauta_Id(sessaoId)
+    SessaoVotacaoEntity session = sessaoRepository.findByPauta_Id(sessaoId)
         .orElseThrow();
-
-    if (!sessao.isOpen()) {
-      throw new IllegalStateException("Sessão encerrada");
-    }
 
     AssociadoEntity associate = associadoRepository
         .findByCpf(cpf)
         .orElseGet(() -> associadoRepository.save(new AssociadoEntity(null, cpf)));
 
-    VoteValueEntity vote = new VoteValueEntity();
-    vote.setSession(sessao);
-    vote.setAssociate(associate);
-    vote.setVoteValue(valor);
+    validSession(session);
+    verifyIfAssociateAlreadyVotedInThisSession(associate, session);
+
+    VoteValueEntity vote = VoteValueEntity.builder()
+        .session(session)
+        .associate(associate)
+        .voteValue(valor)
+        .build();
 
     return voteRepository.save(vote);
   }
+
+  private void validSession(SessaoVotacaoEntity session) {
+    if (!session.isOpen()) {
+      throw new IllegalStateException("Sessão encerrada");
+    }
+  }
+  private void verifyIfAssociateAlreadyVotedInThisSession(AssociadoEntity associate, SessaoVotacaoEntity session) {
+    if (voteRepository.existsByAssociate_IdAndSession_Id(
+        associate.getId(), session.getId())) {
+        throw new IllegalStateException("Associado já votou nesta sessão");
+      }
+    }
 }
 
