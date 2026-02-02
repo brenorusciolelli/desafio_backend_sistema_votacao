@@ -134,7 +134,7 @@ http://localhost:8080/swagger-ui.html
 http://localhost:8080/h2-console
 ```
 
-Configuração via `application.properties` (sem YAML).
+Configuração via `application.properties`.
 
 ---
 
