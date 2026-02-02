@@ -1,5 +1,6 @@
 package com.desafio.teste.desafiobackend.controllers;
 
+import com.desafio.teste.desafiobackend.model.dto.VoteResultDTO;
 import com.desafio.teste.desafiobackend.model.entity.SessaoVotacaoEntity;
 import com.desafio.teste.desafiobackend.service.SessionService;
 import jakarta.validation.constraints.NotBlank;
@@ -30,7 +31,7 @@ public class SessionController {
   }
 
   @GetMapping("/result/{id}")
-  public ResponseEntity<Map<String, Long>> result(@PathVariable @NotBlank UUID id) {
+  public ResponseEntity<VoteResultDTO> result(@PathVariable @NotBlank UUID id) {
     return new ResponseEntity<>(sessaoService.calculateVotes(id), HttpStatus.OK);
   }
 }

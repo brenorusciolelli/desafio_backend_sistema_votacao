@@ -28,7 +28,7 @@ public class VoteService {
         .findByCpf(cpf)
         .orElseGet(() -> associadoRepository.save(new AssociadoEntity(null, cpf)));
 
-    validSession(session);
+    verifyIfSessionIsOpen(session);
     verifyIfAssociateAlreadyVotedInThisSession(associate, session);
 
     VoteValueEntity vote = VoteValueEntity.builder()
@@ -40,7 +40,7 @@ public class VoteService {
     return voteRepository.save(vote);
   }
 
-  private void validSession(SessaoVotacaoEntity session) {
+  private void verifyIfSessionIsOpen(SessaoVotacaoEntity session) {
     if (!session.isOpen()) {
       throw new IllegalStateException("Sessão encerrada");
     }

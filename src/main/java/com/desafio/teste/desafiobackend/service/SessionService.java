@@ -1,5 +1,9 @@
 package com.desafio.teste.desafiobackend.service;
 
+import com.desafio.teste.desafiobackend.exception.BusinessException;
+import com.desafio.teste.desafiobackend.exception.PautaNotFoundException;
+import com.desafio.teste.desafiobackend.exception.SessaoNotFoundException;
+import com.desafio.teste.desafiobackend.model.dto.VoteResultDTO;
 import com.desafio.teste.desafiobackend.model.entity.PautaEntity;
 import com.desafio.teste.desafiobackend.model.entity.SessaoVotacaoEntity;
 import com.desafio.teste.desafiobackend.model.enums.VoteValue;
@@ -21,27 +25,56 @@ public class SessionService {
   private final VoteRepository  voteRepository;
 
   public SessaoVotacaoEntity startSession(UUID pautaId, Long minutos) {
-    PautaEntity pauta = pautaRepository.findById(pautaId)
-        .orElseThrow();
+
+    PautaEntity pauta = getPautaOrThrow(pautaId);
+    validateNoActiveSession(pautaId);
+
+    long duration = resolveDuration(minutos);
 
     SessaoVotacaoEntity sessao = new SessaoVotacaoEntity();
     sessao.setPauta(pauta);
-    sessao.setStartTime(LocalDateTime.now());
-    sessao.setEndTime(LocalDateTime.now().plusMinutes(
-        minutos != null ? minutos : 1
-    ));
+    sessao.setStartTime(now());
+    sessao.setEndTime(now().plusMinutes(duration));
 
     return repository.save(sessao);
   }
 
-  public Map<String, Long> calculateVotes(UUID id){
-    SessaoVotacaoEntity sessao = repository.findByPauta_Id(id)
-        .orElseThrow();
+  protected LocalDateTime now() {
+    return LocalDateTime.now();
+  }
 
-    return Map.of(
-        "YES", voteRepository.countBySessionAndVoteValue(sessao, VoteValue.YES),
-        "NOT", voteRepository.countBySessionAndVoteValue(sessao, VoteValue.NOT)
-    );
+
+  public VoteResultDTO calculateVotes(UUID pautaId) {
+    SessaoVotacaoEntity sessao = getSessaoByPautaOrThrow(pautaId);
+
+    long yes = voteRepository.countBySessionAndVoteValue(sessao, VoteValue.YES);
+    long not = voteRepository.countBySessionAndVoteValue(sessao, VoteValue.NOT);
+
+    return new VoteResultDTO(yes, not);
+  }
+
+  private PautaEntity getPautaOrThrow(UUID pautaId) {
+    return pautaRepository.findById(pautaId)
+        .orElseThrow(() -> new PautaNotFoundException(pautaId));
+  }
+
+  private SessaoVotacaoEntity getSessaoByPautaOrThrow(UUID pautaId) {
+    return repository.findByPauta_Id(pautaId)
+        .orElseThrow(() -> new SessaoNotFoundException(pautaId));
+  }
+
+  private long resolveDuration(Long minutos) {
+    if (minutos == null) return 1;
+    if (minutos <= 0) {
+      throw new IllegalArgumentException("Duração da sessão deve ser maior que zero");
+    }
+    return minutos;
+  }
+
+  private void validateNoActiveSession(UUID pautaId) {
+    if (repository.existsByPauta_IdAndEndTimeAfter(pautaId, LocalDateTime.now())) {
+      throw new BusinessException("Já existe uma sessão ativa para esta pauta");
+    }
   }
 
 }
